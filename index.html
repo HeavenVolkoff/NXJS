@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>NXJS</title>
+
+    <meta name="description" content="NeanderX Javascript Emulator">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/generic.css">
+    <link rel="stylesheet" href="css/foundation.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script type="text/javascript" src="js/shim.js"></script>
+    <script type="text/javascript" src="js/setImmediate.js"></script>
+    <script type="text/javascript" src="js/NeanderX.js"></script>
+</head>
+<body>
+    <header class="header">NXJS</header>
+
+    <div class="body">
+        <main>
+            <div class="papersheet">
+
+            </div>
+        </main>
+
+        <aside>
+            <div id="debug" class="papersheet">
+                Debug:
+                <br>
+                <small class="debug-info">
+                    OpCode: <pre id="opcode">NOP</pre>
+                </small>
+                <small class="debug-info">
+                    Rate: <pre id="rate">0</pre>
+                </small>
+                <br>
+                <small class="debug-info">
+                    PC: <pre id="pc">0x00</pre>
+                </small>
+                <small class="debug-info">
+                    ACC: <pre id="acc">0x00</pre>
+                </small>
+                <small class="debug-info">
+                    ZERO: <pre id="zero">0x00</pre>
+                </small>
+                <small class="debug-info">
+                    NEGATIVE: <pre id="negative">0x00</pre>
+                </small>
+            </div>
+
+            <div id="display" class="papersheet">
+                Display
+                <pre>00</pre>
+            </div>
+
+            <div id="switches" class="papersheet text-align-center">
+                <div class="display-inline-block">
+                    Switches
+                    <form action="javascript:void(0)" class="switches"></form>
+                    <small class="hexa">
+                        Hexa
+                        <pre>0x00</pre>
+                    </small>
+                    <small class="decimal">
+                        Decimal
+                        <pre>0</pre>
+                    </small>
+                </div>
+
+                <form action="javascript:void(0)" class="readyCheck full-button">
+                    <input type="checkbox" id="ready_check">
+                    <label for="ready_check" class="icon"></label>
+                </form>
+            </div>
+        </aside>
+    </div>
+
+    <footer>Created by Vítor Augusto da Silva Vasconcellos</footer>
+
+    <script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>

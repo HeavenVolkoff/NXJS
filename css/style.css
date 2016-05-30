@@ -1,0 +1,166 @@
+/*
+ *  THIS CSS IS RESERVED TO CUSTOM STYLES
+ */
+
+@font-face {
+    font-family: 'FrozenCrystal';
+    font-style: normal;
+    font-weight: 300;
+    src: url("../assets/frozencrystal.ttf");
+}
+
+.papersheet {
+    text-decoration: none;
+    line-height: 1.0;
+    color: #8A9199;
+    height: auto;
+    overflow: auto;
+    user-select: none;
+    border-radius: 2px;
+    transition: all 400ms cubic-bezier(0.165, 0.84, 0.44, 1);
+    background-color: #FFF;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
+}
+
+.full-button{
+    width: 40px;
+    position: absolute;
+    right: 0px;
+    top: 0;
+    height: 100%;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.full-button > .icon{
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+
+    color: white;
+
+    cursor: pointer;
+
+    text-align: center;
+    line-height: 1.5;
+    font-size: 21px;
+    font-family: monospace;
+    font-weight: 700;
+
+    animation: plus-out 0.3s;
+    transition: all 0.3s;
+}
+
+.full-button > .icon:after{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(50% - 16px);
+}
+
+#debug .debug-info{
+    display: inline-block;
+    margin: 1em;
+}
+
+#debug .debug-info > pre{
+    display: inline-block;
+    font-family: monospace;
+    margin: 0;
+}
+
+#display > pre{
+    font-family: FrozenCrystal, monospace;
+    font-size: 2em;
+    margin: 0.5em;
+}
+
+#switches{
+    position: relative;
+}
+
+#switches form.readyCheck input[type=checkbox] {
+    display:none;
+}
+
+#switches form.readyCheck label {
+    background: #00B24E;
+}
+
+#switches form.readyCheck input:checked + label {
+    background: #db4437;
+}
+
+#switches form.readyCheck label:after {
+    content:"✓";
+}
+
+#switches form.readyCheck input:checked + label:after {
+    content:"✖";
+}
+
+#switches form.switches{
+    width: 200px;
+    margin: 0 auto;
+}
+
+#switches form.switches input[type=checkbox] {
+    display:none;
+}
+
+#switches form.switches label {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border: .25rem solid #777;
+    transition: .25s;
+    cursor: pointer;
+    overflow: hidden;
+    color: #777;
+    font: normal 1.90rem "Roboto";
+    text-align: center;
+    vertical-align: middle;
+    margin: 0.25rem;
+}
+
+#switches form.switches label:after {
+    content:"0";
+}
+
+#switches form.switches input:checked + label {
+    background: #777;
+    color: #FEFEFE
+}
+
+#switches form.switches input:checked + label:after {
+    content:"1";
+}
+
+#switches form.switches input[type=checkbox]:disabled + label{
+    opacity: 0.5;
+}
+
+#switches .decimal{
+    float: right;
+    margin-right: 0.5em;
+}
+
+#switches .hexa{
+    float: left;
+    margin-left: 0.5em;
+}
+
+@media all and (min-width: 800px) {
+    #switches form.switches{
+        width: initial;
+    }
+} @media all and (min-height: 550px) {
+    .papersheet {
+        line-height: 1.7;
+    }
+}
