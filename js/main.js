@@ -22,11 +22,12 @@
                     zero     = zero     | 0;
                     negative = negative | 0;
 
-                    rate   = +rate;
+                    rate   = rate * 100 + 0.5 | 0;
+                    rate   = rate > 0? rate|0 : -rate|0;
                     opcode = String(opcode);
 
                     GUI.debug.pre.opcode.textContent = opcode.toUpperCase().padEnd(3, ' ');
-                    GUI.debug.pre.rate.textContent   = rate.toFixed(2);
+                    GUI.debug.pre.rate.textContent   = (String(rate > 100? 100 : rate) + '%').padStart(4, ' ');
 
                     GUI.debug.pre.pc.textContent       = "0x" + pc.toString(16).toUpperCase().padStart(2, 0);
                     GUI.debug.pre.acc.textContent      = "0x" + acc.toString(16).toUpperCase().padStart(2, 0);
