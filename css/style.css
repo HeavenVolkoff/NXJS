@@ -2,13 +2,6 @@
  *  THIS CSS IS RESERVED TO CUSTOM STYLES
  */
 
-@font-face {
-    font-family: 'FrozenCrystal';
-    font-style: normal;
-    font-weight: 300;
-    src: url("../assets/frozencrystal.ttf");
-}
-
 .papersheet {
     text-decoration: none;
     line-height: 1.0;
@@ -70,12 +63,12 @@
 
 #debug .debug-info > pre{
     display: inline-block;
-    font-family: monospace;
+    font-family: Roboto Mono, monospace;
     margin: 0;
 }
 
 #display > pre{
-    font-family: FrozenCrystal, monospace;
+    font-family: Digital-7 Mono, monospace;
     font-size: 2em;
     margin: 0.5em;
 }
@@ -122,7 +115,7 @@
     cursor: pointer;
     overflow: hidden;
     color: #777;
-    font: normal 1.90rem "Roboto";
+    font: normal 1.90rem Roboto Mono, monospace;
     text-align: center;
     vertical-align: middle;
     margin: 0.25rem;
@@ -130,6 +123,8 @@
 
 #switches form.switches label:after {
     content:"0";
+    position: relative;
+    bottom: 0.15em;
 }
 
 #switches form.switches input:checked + label {

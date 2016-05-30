@@ -1,0 +1,48 @@
+@font-face {
+    font-family: 'Digital-7 Mono';
+    font-style: normal;
+    src: url('../fonts/Digital-7-Mono/Digital-7-Mono.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-weight: 300;
+  font-style: normal;
+  src: url('../fonts/Roboto-Mono-300/Roboto-Mono-300.eot');
+  src: url('../fonts/Roboto-Mono-300/Roboto-Mono-300.eot?#iefix') format('embedded-opentype'),
+       local('Roboto Mono Light'),
+       local('Roboto-Mono-300'),
+       url('../fonts/Roboto-Mono-300/Roboto-Mono-300.woff2') format('woff2'),
+       url('../fonts/Roboto-Mono-300/Roboto-Mono-300.woff') format('woff'),
+       url('../fonts/Roboto-Mono-300/Roboto-Mono-300.ttf') format('truetype'),
+       url('../fonts/Roboto-Mono-300/Roboto-Mono-300.svg#RobotoMono') format('svg');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-weight: 500;
+  font-style: normal;
+  src: url('../fonts/Roboto-Mono-500/Roboto-Mono-500.eot');
+  src: url('../fonts/Roboto-Mono-500/Roboto-Mono-500.eot?#iefix') format('embedded-opentype'),
+       local('Roboto Mono Medium'),
+       local('Roboto-Mono-500'),
+       url('../fonts/Roboto-Mono-500/Roboto-Mono-500.woff2') format('woff2'),
+       url('../fonts/Roboto-Mono-500/Roboto-Mono-500.woff') format('woff'),
+       url('../fonts/Roboto-Mono-500/Roboto-Mono-500.ttf') format('truetype'),
+       url('../fonts/Roboto-Mono-500/Roboto-Mono-500.svg#RobotoMono') format('svg');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-weight: 700;
+  font-style: normal;
+  src: url('../fonts/Roboto-Mono-700/Roboto-Mono-700.eot');
+  src: url('../fonts/Roboto-Mono-700/Roboto-Mono-700.eot?#iefix') format('embedded-opentype'),
+       local('Roboto Mono Bold'),
+       local('Roboto-Mono-700'),
+       url('../fonts/Roboto-Mono-700/Roboto-Mono-700.woff2') format('woff2'),
+       url('../fonts/Roboto-Mono-700/Roboto-Mono-700.woff') format('woff'),
+       url('../fonts/Roboto-Mono-700/Roboto-Mono-700.ttf') format('truetype'),
+       url('../fonts/Roboto-Mono-700/Roboto-Mono-700.svg#RobotoMono') format('svg');
+}
+
