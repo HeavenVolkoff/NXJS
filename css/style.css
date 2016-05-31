@@ -63,12 +63,10 @@
 
 #debug .debug-info > pre{
     display: inline-block;
-    font-family: Roboto Mono, monospace;
     margin: 0;
 }
 
 #display > pre{
-    font-family: Digital-7 Mono, monospace;
     font-size: 2em;
     margin: 0.5em;
 }

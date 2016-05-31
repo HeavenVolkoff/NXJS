@@ -47,6 +47,13 @@ footer{
     text-align: center;
 }
 
+code,
+kbd,
+pre,
+samp {
+    font-family: Roboto Mono, monospace;
+}
+
 .body{
     margin: 10px;
     flex: 1 0 auto;
