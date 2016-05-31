@@ -42,7 +42,7 @@
     text-align: center;
     line-height: 1.5;
     font-size: 21px;
-    font-family: monospace;
+    font-family: Roboto Mono, monospace;
     font-weight: 700;
 
     animation: plus-out 0.3s;
