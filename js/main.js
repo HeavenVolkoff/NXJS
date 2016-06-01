@@ -79,18 +79,18 @@
         },
 
         loadFile: () => {
-            let loadFile   = GUI.debug.querySelector("button.load-file");
+            let loadFile   = GUI.debug.querySelector(".load-file");
             let inputFile  = loadFile.querySelector("input[type=file]");
             let onFileLoad = null;
 
             loadFile.addEventListener('click', () => {
-                inputFile.dispatchEvent(new Event('click'));
+                inputFile.click();
             });
 
             inputFile.addEventListener('change', () => {
                 if(onFileLoad){
                     onFileLoad(inputFile.files[0]);
-                    inputFile.value = null;
+                    inputFile.value = null; //reset input
                 }
             });
 
