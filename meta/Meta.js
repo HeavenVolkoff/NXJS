@@ -5,7 +5,7 @@ metaUtil = require("~/meta/util.js");
 
 Meta = {
     //TODO: Remove wavy dependency
-    //assets: file => path.join('~', path.relative(metaUtil.Dirs.root, metaUtil.Assets(file))),
+    //assets: fileArray => path.join('~', path.relative(metaUtil.Dirs.root, metaUtil.Assets(fileArray))),
 
     require: file => {
         let filePath         = metaUtil.Assets(file);

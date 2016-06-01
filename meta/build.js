@@ -61,13 +61,29 @@ metaUtil.chkDir(dist);
 
 console.log("Building NeanderX Web...");
 
+let webVersion = MetaScript.transform(
+    fs.readFileSync(filePath),
+    filePath,
+    scope()
+);
+
 fs.writeFileSync(
     path.join(dist, filename),
-    MetaScript.transform(
-        fs.readFileSync(filePath),
-        filePath,
-        scope()
-    )
+    webVersion
 );
+
+let index = process.argv.indexOf('--gh-pages', 2);
+if(index !== -1 && process.argv.length > index){
+    let folder = process.argv[index + 1];
+    console.log("Copying Web version to gh-pages folder: " + folder);
+
+    dist = path.join(metaUtil.Dirs.root, folder);
+    metaUtil.chkDir(dist);
+
+    fs.writeFileSync(
+        path.join(dist, filename),
+        webVersion
+    );
+}
 
 console.log("Done");

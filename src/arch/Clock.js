@@ -103,7 +103,7 @@ module.exports = /*?
 
             cycles = counter + cycles >>> 0;
 
-            //Calculate rate on booleans 500 milliseconds interval
+            //Calculate rate on each 500 milliseconds interval
             /*? if(NODE){*/
             temp = process.hrtime(startTime);
             if(temp[0] >>> 0 > 0 | temp[1] >>> 0 > 500000000){

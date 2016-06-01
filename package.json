@@ -18,8 +18,16 @@
     "architecture",
     "processor"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeavenVolkoff/NXJS.git"
+  },
   "author": "Vitor Augusto da Silva Vasconcellos <vasvas10@gmail.com> (https://github.com/HeavenVolkoff)",
-  "license": "GPL-3.0",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/HeavenVolkoff/NXJS/issues"
+  },
+  "homepage": "https://github.com/HeavenVolkoff/NXJS#readme",
   "dependencies": {},
   "devDependencies": {
     "metascript": "^1.0.0",

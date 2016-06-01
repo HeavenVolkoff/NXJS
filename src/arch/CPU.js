@@ -16,22 +16,65 @@ class UnknownInstruction extends Error{
 
 class CPU {
     constructor(opts) {
-        opts = typeof opts === "object"? opts : {};
+        /**
+         * Clock frequency in Kilohertz
+         * @type {number}
+         */
+        this.kHz = opts.kHz || 1000;
 
-        this.kHz    = opts.kHz || 1000;
+        /**
+         * Array of Inputs Devices
+         * @type {Function[]}
+         */
+        this.input = Array.isArray(opts.input)? opts.input.map(input => {
+            if(typeof input === "function"){
+                return input;
 
-        this.input  = Array.isArray(opts.input)       ? opts.input  : [];
-        this.output = Array.isArray(opts.output)      ? opts.output : [];
+            } else if(typeof input === "object" && typeof input.read === "function"){
+                return () => {
+                    return input.read();
+                };
+            }
 
-        this.clock = Clock(this.kHz, this.tick, this);
+            throw new TypeError("Invalid Input: no read function declared");
+        }) : [];
 
+        /**
+         * Array of Output Devices
+         * @type {Function[]}
+         */
+        this.output = Array.isArray(opts.output)? opts.output.map(output => {
+            if(typeof output === "function"){
+                return output;
+
+            } else if(typeof output === "object" && typeof output.write === "function"){
+                let write = output.write;
+                
+                return () => {
+                    return write.call(output);
+                };
+            }
+
+            throw new TypeError("Invalid Output: no write function declared");
+        }) : [];
+
+        /**
+         * OpCodes names (Mapped to each binary value)
+         * @type {String[]}
+         */
         this.opCodes = ["nop", "sta", "lda", "add", "or", "and", "not", "sub", "jmp", "jn", "jz", "jnz", "in", "out", "ldi", "hlt"];
+
+        /**
+         * Instance of Clock
+         * @type {Object}
+         */
+        this.clock = Clock(this.kHz, this.tick, this);
 
         /**
          * Buffer (Holds all memory and registers)
          * @type {ArrayBuffer}
          */
-        let buffer  = new ArrayBuffer(/*?= 255 + 1 + 1 + 2*/);
+        let buffer = new ArrayBuffer(/*?= 255 + 1 + 1 + 2*/);
 
         /**
          * 8-bit Memory
@@ -43,13 +86,13 @@ class CPU {
          * Accumulator Register
          * @type {Uint8Array}
          */
-        this.acc    = new Uint8Array(buffer, 255, 1);
+        this.acc = new Uint8Array(buffer, 255, 1);
 
         /**
          * Program Counter
          * @type {Uint8Array}
          */
-        this.pc     = new Uint8Array(buffer, 256, 1);
+        this.pc = new Uint8Array(buffer, 256, 1);
 
         /**
          * Flags Registers
@@ -57,12 +100,20 @@ class CPU {
          * [1] => Zero
          * @type {Uint8Array}
          */
-        this.flags  = new Uint8Array(buffer, 257, 2);
+        this.flags = new Uint8Array(buffer, 257, 2);
 
-        this.debug = typeof opts.debug === 'function'? () => {
-            opts.debug.call(this);
+        /**
+         * Debug Function
+         *
+         * @type {Function|null}
+         */
+        let debug  = opts.debug;
+        this.debug = typeof debug === 'function'? (synchronous) => {
+            synchronous = typeof synchronous === 'boolean'? synchronous : false;
 
-            if(!this.clock.isHalted()){
+            debug(this);
+
+            if(!(this.clock.isHalted() || synchronous)){
                 //? if(NODE){
                 setTimeout(this.debug, /*?= 1000/60 */);
                 //? }else if(WEB){
@@ -73,9 +124,13 @@ class CPU {
     }
 
     /**
-     * Reset CPU
+     * Reset CPU with specified machine code binary
+     *
+     * @param {(Array|ArrayBuffer)} [fileArray] - Machine code binary source fileArray
+     * @throws {TypeError}                      - Will throw if fileArray is not an Array or TypedArray
+     * @throws {RangeError}                     - Will throw if fileArray size is bigger than memory (255 Bytes)
      */
-    reset(){
+    reset(fileArray){
         //Reset Memory
         this.memory.fill(0);
 
@@ -88,21 +143,17 @@ class CPU {
 
         //Reset Clock
         this.clock.stop();
+
+        //fill memory with File if available
+        if(!(typeof fileArray === "undefined" || fileArray === null)){
+            this.memory.set(fileArray);
+        }
     }
 
     /**
-     * Initialize CPU with specified machine code binary
-     *
-     * @param {(Array|TypedArray)} file - Machine code binary source file
-     * @throws {TypeError}              - Will throw if file is not an Array or TypedArray
-     * @throws {RangeError}             - Will throw if file size is bigger than memory (255 Bytes)
+     * Start CPU operation (Start Clock)
      */
-    init(file){
-        this.reset();
-
-        //Copy file contents to memory
-        this.memory.set(file);
-
+    start(){
         //Start Debug function Loop
         if(this.debug){
             //? if(NODE){
@@ -131,10 +182,19 @@ class CPU {
     }
 
     /**
+     * Step-by-step execution
+     */
+    step(){
+        this.tick();
+        if(this.debug){
+            this.debug(true);
+        }
+    }
+
+    /**
      * CPU Main Tick
      */
     tick(){
-        "use asm";
         let // Signed Int32
             pc  = this.pc[0] | 0, //Get PC register
             arg = 0,              //Argument (Only used on 2 bytes instructions)
@@ -235,11 +295,11 @@ class CPU {
                         break;
 
                     case 12: //IN
-                        this.acc[0] = this.input[arg].read() | 0;
+                        this.acc[0] = this.input[arg]() | 0;
                         break;
 
                     case 13: //OUT
-                        this.output[arg].write(this.acc[0] >>> 0);
+                        this.output[arg](this.acc[0] >>> 0);
                         break;
 
                     case 14: //LDI

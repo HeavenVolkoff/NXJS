@@ -1,8 +1,4 @@
 (function(global, factory) {
-    Array.from = typeof Array.from === "function" ? Array.from : (arrLike) => {
-        return arrLike.length === 1 ? [arrLike[0]] : Array.apply(null, arrLike);
-    };
-
     if (typeof define === 'function' && define["amd"]){
         /* AMD */
         define("NeanderX", function(){
