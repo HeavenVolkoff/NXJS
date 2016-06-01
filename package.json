@@ -26,6 +26,8 @@
   "homepage": "https://github.com/HeavenVolkoff/NXJS#readme",
   "dependencies": {
     "alertifyjs": "^1.7.0",
+    "hint.css": "^2.3.0",
+    "normalize.css": "^4.1.1",
     "setimmediate": "^1.0.4"
   },
   "devDependencies": {

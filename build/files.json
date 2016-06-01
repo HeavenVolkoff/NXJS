@@ -1,4 +1,4 @@
 {
   "js": ["alertifyjs#build#alertify.js", "setimmediate#setImmediate.js"],
-  "css": ["alertifyjs#css#alertify.css", "alertifyjs#themes#default.css"]
+  "css": ["alertifyjs#css#alertify.css", "alertifyjs#themes#default.css", "hint.css#hint.css", "normalize.css#normalize.css"]
 }

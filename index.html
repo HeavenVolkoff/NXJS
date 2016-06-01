@@ -10,20 +10,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/lib/normalize.css">
+    <link rel="stylesheet" href="css/lib/alertify.css">
+    <link rel="stylesheet" href="css/lib/default.css">
+    <link rel="stylesheet" href="css/lib/hint.css">
+
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/generic.css">
     <link rel="stylesheet" href="css/foundation.css">
     <link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="css/lib/alertify.css">
-    <link rel="stylesheet" href="css/lib/default.css">
-
     <script type="text/javascript" src="js/shim.js" defer></script>
+
     <script type="text/javascript" src="js/lib/setImmediate.js" defer></script>
-    <script type="text/javascript" src="js/lib/alertify.js" defer></script>
+    <script type="text/javascript" src="js/lib/alertify.js"     defer></script>
+
     <script type="text/javascript" src="js/NeanderX.js" defer></script>
-    <script type="text/javascript" src="js/main.js" defer></script>
+    <script type="text/javascript" src="js/main.js"     defer></script>
 </head>
 <body>
     <header class="header">NXJS</header>
@@ -59,7 +62,7 @@
                     NEGATIVE: <pre class="negative">0x00</pre>
                 </small>
 
-                <button class="load-file full-button">
+                <button class="load-file full-button hint--left hint--info" aria-label="Load file">
                     <i class="icon"></i>
                     <input type="file" class="display-none">
                 </button>
@@ -84,7 +87,7 @@
                     </small>
                 </div>
 
-                <button class="switches-ready full-button">
+                <button class="switches-ready full-button hint--left hint--info" aria-label="Set switches value">
                     <i class="icon"></i>
                 </button>
             </div>

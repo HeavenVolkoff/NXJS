@@ -32,7 +32,6 @@
     right: 0;
     top: 0;
 
-    overflow: hidden;
     cursor: pointer;
 }
 
@@ -90,7 +89,7 @@
 }
 
 #debug > .load-file > .icon:after {
-    content: "file_upload";
+    content: "insert_drive_file";
 }
 
 
