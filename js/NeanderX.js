@@ -1,8 +1,4 @@
 (function(global, factory) {
-    Array.from = typeof Array.from === "function" ? Array.from : (arrLike) => {
-        return arrLike.length === 1 ? [arrLike[0]] : Array.apply(null, arrLike);
-    };
-
     if (typeof define === 'function' && define["amd"]){
         /* AMD */
         define("NeanderX", function(){
@@ -115,7 +111,7 @@
 
                 cycles = counter + cycles >>> 0;
 
-                //Calculate rate on booleans 500 milliseconds interval
+                //Calculate rate on each 500 milliseconds interval
                 temp = performance.now() - startTime;
                 if(temp > 500){
                     //Calculate rate and reset counters
@@ -181,22 +177,65 @@
 
     class CPU {
         constructor(opts) {
-            opts = typeof opts === "object"? opts : {};
+            /**
+             * Clock frequency in Kilohertz
+             * @type {number}
+             */
+            this.kHz = opts.kHz || 1000;
 
-            this.kHz    = opts.kHz || 1000;
+            /**
+             * Array of Inputs Devices
+             * @type {Function[]}
+             */
+            this.input = Array.isArray(opts.input)? opts.input.map(input => {
+                if(typeof input === "function"){
+                    return input;
 
-            this.input  = Array.isArray(opts.input)       ? opts.input  : [];
-            this.output = Array.isArray(opts.output)      ? opts.output : [];
+                } else if(typeof input === "object" && typeof input.read === "function"){
+                    return () => {
+                        return input.read();
+                    };
+                }
 
-            this.clock = Clock(this.kHz, this.tick, this);
+                throw new TypeError("Invalid Input: no read function declared");
+            }) : [];
 
+            /**
+             * Array of Output Devices
+             * @type {Function[]}
+             */
+            this.output = Array.isArray(opts.output)? opts.output.map(output => {
+                if(typeof output === "function"){
+                    return output;
+
+                } else if(typeof output === "object" && typeof output.write === "function"){
+                    let write = output.write;
+
+                    return () => {
+                        return write.call(output);
+                    };
+                }
+
+                throw new TypeError("Invalid Output: no write function declared");
+            }) : [];
+
+            /**
+             * OpCodes names (Mapped to each binary value)
+             * @type {String[]}
+             */
             this.opCodes = ["nop", "sta", "lda", "add", "or", "and", "not", "sub", "jmp", "jn", "jz", "jnz", "in", "out", "ldi", "hlt"];
+
+            /**
+             * Instance of Clock
+             * @type {Object}
+             */
+            this.clock = Clock(this.kHz, this.tick, this);
 
             /**
              * Buffer (Holds all memory and registers)
              * @type {ArrayBuffer}
              */
-            let buffer  = new ArrayBuffer(259);
+            let buffer = new ArrayBuffer(259);
 
             /**
              * 8-bit Memory
@@ -208,13 +247,13 @@
              * Accumulator Register
              * @type {Uint8Array}
              */
-            this.acc    = new Uint8Array(buffer, 255, 1);
+            this.acc = new Uint8Array(buffer, 255, 1);
 
             /**
              * Program Counter
              * @type {Uint8Array}
              */
-            this.pc     = new Uint8Array(buffer, 256, 1);
+            this.pc = new Uint8Array(buffer, 256, 1);
 
             /**
              * Flags Registers
@@ -222,21 +261,33 @@
              * [1] => Zero
              * @type {Uint8Array}
              */
-            this.flags  = new Uint8Array(buffer, 257, 2);
+            this.flags = new Uint8Array(buffer, 257, 2);
 
-            this.debug = typeof opts.debug === 'function'? () => {
-                opts.debug.call(this);
+            /**
+             * Debug Function
+             *
+             * @type {Function|null}
+             */
+            let debug  = opts.debug;
+            this.debug = typeof debug === 'function'? (synchronous) => {
+                synchronous = typeof synchronous === 'boolean'? synchronous : false;
 
-                if(!this.clock.isHalted()){
+                debug(this);
+
+                if(!(this.clock.isHalted() || synchronous)){
                     requestAnimationFrame(this.debug);
                 }
             } : null;
         }
 
         /**
-         * Reset CPU
+         * Reset CPU with specified machine code binary
+         *
+         * @param {(Array|ArrayBuffer)} [fileArray] - Machine code binary source fileArray
+         * @throws {TypeError}                      - Will throw if fileArray is not an Array or TypedArray
+         * @throws {RangeError}                     - Will throw if fileArray size is bigger than memory (255 Bytes)
          */
-        reset(){
+        reset(fileArray){
             //Reset Memory
             this.memory.fill(0);
 
@@ -249,21 +300,17 @@
 
             //Reset Clock
             this.clock.stop();
+
+            //fill memory with File if available
+            if(!(typeof fileArray === "undefined" || fileArray === null)){
+                this.memory.set(fileArray);
+            }
         }
 
         /**
-         * Initialize CPU with specified machine code binary
-         *
-         * @param {(Array|TypedArray)} file - Machine code binary source file
-         * @throws {TypeError}              - Will throw if file is not an Array or TypedArray
-         * @throws {RangeError}             - Will throw if file size is bigger than memory (255 Bytes)
+         * Start CPU operation (Start Clock)
          */
-        init(file){
-            this.reset();
-
-            //Copy file contents to memory
-            this.memory.set(file);
-
+        start(){
             //Start Debug function Loop
             if(this.debug){
                 requestAnimationFrame(this.debug);
@@ -288,10 +335,19 @@
         }
 
         /**
+         * Step-by-step execution
+         */
+        step(){
+            this.tick();
+            if(this.debug){
+                this.debug(true);
+            }
+        }
+
+        /**
          * CPU Main Tick
          */
         tick(){
-            "use asm";
             let // Signed Int32
                 pc  = this.pc[0] | 0, //Get PC register
                 arg = 0,              //Argument (Only used on 2 bytes instructions)
@@ -397,11 +453,11 @@
                             break;
 
                         case 12: //IN
-                            this.acc[0] = this.input[arg].read() | 0;
+                            this.acc[0] = this.input[arg]() | 0;
                             break;
 
                         case 13: //OUT
-                            this.output[arg].write(this.acc[0] >>> 0);
+                            this.output[arg](this.acc[0] >>> 0);
                             break;
 
                         case 14: //LDI
@@ -424,38 +480,105 @@
 
     /**
      * Decodes a hex encoded string to a Number array.
+     *
+     * loosely based on code from:
      * @link https://github.com/dcodeIO/bytebuffer.js/blob/master/dist/bytebuffer.js
      *
      * @param {string} str String to decode
      * @returns {Number[]}
      */
     let hexToArray = str => {
-        if (typeof str !== 'string')
-            throw TypeError("Illegal str: Not a string");
-        if (str.length % 2 !== 0)
-            throw TypeError("Illegal str: Length not a multiple of 2");
+        var length,
+            arr  = null,
+            i    = 0,
+            j    = 0;
 
-        let length = str.length,
-            arr = new Array(length / 2),
-            temp;
+        if (typeof str !== 'string'){
+            throw TypeError("Argument must be a string");
+        }
 
-        for (var i=0, j=0; i<length; i+=2) {
-            temp = parseInt(str.substring(i, i+2), 16) | 0;
-            if (!isFinite(temp) || temp < 0 || temp > 255)
-                throw TypeError("Illegal str: Contains non-hex characters");
+        str    = str.replace(/[^A-Fa-f0-9]/g, '');
+        length = str.length;
 
-            arr[j++] = temp;
+        if (length & 1) {//% 2
+            throw TypeError("String length is not a multiple of 2");
+        }
+
+        arr = new Array(length / 2);
+
+        for (; i < length; i += 2) {
+            arr[j++] = parseInt(str.substring(i, i+2), 16) | 0;
         }
 
         return arr;
     };
 
     class NeanderX {
+        /**
+         * NeaderX Constructor
+         *
+         * @param {Object} [opts={}]
+         */
         constructor(opts){
-            opts = opts || {};
-            this.cpu = new CPU(opts);
+            this.cpu = new CPU(opts || {});
 
-            this.cpu.init(hexToArray(opts.hex));
+            this.fileArray = null;
+
+            this.fileReader = new FileReader();
+        }
+
+        /**
+         *
+         * @param {(File|String|Null|undefined)} file
+         * @param {(Function)}                   [cb]
+         * @returns {NeanderX}
+         */
+        load(file, cb){
+            cb = typeof cb === 'function'? cb : error => {
+                throw error;
+            };
+
+            if(Array.isArray(file) || file instanceof ArrayBuffer){
+                this.fileArray = file;
+
+            }  else if(file instanceof File){
+                this.fileReader.onloadend = () => {
+                    let error;
+
+                    if(this.fileReader.error){
+                        error = this.fileReader.error;
+
+                    }else{
+                        try{
+                            this.cpu.reset(this.fileArray = hexToArray(this.fileReader.result));
+
+                        }catch(err){
+                            error = err;
+                        }
+                    }
+
+                    cb(error);
+                };
+
+                this.fileReader.readAsText(file); //Asynchronous
+                return this;
+
+            }  else if(this.fileArray === null){
+                setImmediate(() => cb(new TypeError("Invalid File")));
+                return this;
+            }
+
+            setImmediate(() => {
+                let error;
+
+                try{
+                    this.cpu.reset(this.fileArray);
+
+                }catch(err){error = err}
+
+                cb(error);
+            });
+            return this;
         }
     }
 

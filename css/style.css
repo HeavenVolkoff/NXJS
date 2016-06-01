@@ -11,39 +11,44 @@
     user-select: none;
     border-radius: 2px;
     transition: all 400ms cubic-bezier(0.165, 0.84, 0.44, 1);
-    background-color: #FFF;
+    background-color: #FEFEFE;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
 }
 
+.full-button-wrapper.full-button-wrapper{ /*Grantees changes*/
+    position: relative;
+    padding-right: 40px;
+}
+
 .full-button{
-    width: 40px;
     position: absolute;
-    right: 0px;
-    top: 0;
+    width: 40px;
     height: 100%;
-    cursor: pointer;
+
+    border: 0;
+    padding: 0;
+    margin: 0;
+
+    right: 0;
+    top: 0;
+
     overflow: hidden;
+    cursor: pointer;
+}
+
+.full-button:focus {
+    outline:0;
 }
 
 .full-button > .icon{
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
+
+    border: 0;
     padding: 0;
     margin: 0;
 
     color: white;
-
-    cursor: pointer;
-
-    text-align: center;
-    line-height: 1.5;
-    font-size: 21px;
-    font-family: Roboto Mono, monospace;
-    font-weight: 700;
 
     animation: plus-out 0.3s;
     transition: all 0.3s;
@@ -54,7 +59,21 @@
     left: 0;
     right: 0;
     top: calc(50% - 16px);
+    font-family: Material Icons, monospace;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
 }
+
+
+
 
 #debug .debug-info{
     display: inline-block;
@@ -66,45 +85,51 @@
     margin: 0;
 }
 
+#debug > .load-file {
+    background: #464646;
+}
+
+#debug > .load-file > .icon:after {
+    content: "file_upload";
+}
+
+
+
+
 #display > pre{
     font-size: 2em;
+    font-family: Digital-7 Mono, Roboto Mono, monospace;
     margin: 0.5em;
 }
 
-#switches{
-    position: relative;
-}
 
-#switches form.readyCheck input[type=checkbox] {
-    display:none;
-}
 
-#switches form.readyCheck label {
+
+
+#switches > .switches-ready {
     background: #00B24E;
 }
 
-#switches form.readyCheck input:checked + label {
+#switches > .switches-ready.clicked {
     background: #db4437;
 }
 
-#switches form.readyCheck label:after {
-    content:"✓";
+#switches > .switches-ready > .icon:after {
+    content:"done";
 }
 
-#switches form.readyCheck input:checked + label:after {
-    content:"✖";
+#switches > .switches-ready.clicked > .icon:after {
+    content:"undo";
 }
 
-#switches form.switches{
+
+
+#switches .switches{
     width: 200px;
     margin: 0 auto;
 }
 
-#switches form.switches input[type=checkbox] {
-    display:none;
-}
-
-#switches form.switches label {
+#switches .switches label {
     display: inline-block;
     width: 2rem;
     height: 2rem;
@@ -119,22 +144,26 @@
     margin: 0.25rem;
 }
 
-#switches form.switches label:after {
+#switches .switches label:after {
     content:"0";
     position: relative;
     bottom: 0.15em;
 }
 
-#switches form.switches input:checked + label {
+#switches .switches input[type=checkbox] {
+    display: none;
+}
+
+#switches .switches input[type=checkbox]:checked + label {
     background: #777;
     color: #FEFEFE
 }
 
-#switches form.switches input:checked + label:after {
+#switches .switches input[type=checkbox]:checked + label:after {
     content:"1";
 }
 
-#switches form.switches input[type=checkbox]:disabled + label{
+#switches .switches input[type=checkbox]:disabled + label{
     opacity: 0.5;
 }
 
@@ -147,6 +176,10 @@
     float: left;
     margin-left: 0.5em;
 }
+
+
+
+
 
 @media all and (min-width: 800px) {
     #switches form.switches{

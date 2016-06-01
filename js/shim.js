@@ -35,4 +35,8 @@
     global.String.prototype.padEnd = typeof String.prototype.padEnd === 'function'? String.prototype.padEnd : function padEnd(targetLength, padString) {
         return this + pad(this, targetLength, padString);
     };
+
+    global.Array.from = typeof global.Array.from === "function" ? global.Array.from : function from(arrLike) {
+        return arrLike.length === 1 ? [arrLike[0]] : Array.apply(null, arrLike);
+    };
 })(window);

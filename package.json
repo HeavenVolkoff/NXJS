@@ -1,0 +1,34 @@
+{
+  "name": "gh-pages_neanderx",
+  "version": "0.0.1",
+  "description": "A Browser implementation of NeanderX Emulator",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeavenVolkoff/NXJS.git"
+  },
+  "keywords": [
+    "NeanderX",
+    "Neander",
+    "Emulator",
+    "Web",
+    "Browser"
+  ],
+  "author": "Vitor Augusto da Silva Vasconcellos <vasvas10@gmail.com> (https://github.com/HeavenVolkoff)",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/HeavenVolkoff/NXJS/issues"
+  },
+  "homepage": "https://github.com/HeavenVolkoff/NXJS#readme",
+  "dependencies": {
+    "alertifyjs": "^1.7.0",
+    "setimmediate": "^1.0.4"
+  },
+  "devDependencies": {
+    "wavy": "^1.0.1"
+  }
+}

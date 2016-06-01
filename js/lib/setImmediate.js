@@ -17,7 +17,7 @@
     }
 
     // This function accepts the same arguments as setImmediate, but
-    // returns booleans function that requires no arguments.
+    // returns a function that requires no arguments.
     function partiallyApplied(handler) {
         var args = [].slice.call(arguments, 1);
         return function() {
@@ -31,9 +31,9 @@
 
     function runIfPresent(handle) {
         // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
-        // So if we're currently running booleans task, we'll need to delay this invocation.
+        // So if we're currently running a task, we'll need to delay this invocation.
         if (currentlyRunningATask) {
-            // Delay by doing booleans setTimeout. setImmediate was tried instead, but in Firefox 7 it generated booleans
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
             // "too much recursion" error.
             setTimeout(partiallyApplied(runIfPresent, handle), 0);
         } else {
@@ -63,7 +63,7 @@
     }
 
     function canUsePostMessage() {
-        // The test against `importScripts` prevents this implementation from being installed inside booleans web worker,
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
         // where `global.postMessage` means something completely different and can't be used for this purpose.
         if (global.postMessage && !global.importScripts) {
             var postMessageIsAsynchronous = true;
@@ -122,7 +122,7 @@
         var html = doc.documentElement;
         setImmediate = function() {
             var handle = addFromSetImmediateArguments(arguments);
-            // Create booleans <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
             // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
             var script = doc.createElement("script");
             script.onreadystatechange = function () {

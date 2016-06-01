@@ -16,9 +16,14 @@
     <link rel="stylesheet" href="css/foundation.css">
     <link rel="stylesheet" href="css/style.css">
 
-    <script type="text/javascript" src="js/shim.js"></script>
-    <script type="text/javascript" src="js/setImmediate.js"></script>
-    <script type="text/javascript" src="js/NeanderX.js"></script>
+    <link rel="stylesheet" href="css/lib/alertify.css">
+    <link rel="stylesheet" href="css/lib/default.css">
+
+    <script type="text/javascript" src="js/shim.js" defer></script>
+    <script type="text/javascript" src="js/lib/setImmediate.js" defer></script>
+    <script type="text/javascript" src="js/lib/alertify.js" defer></script>
+    <script type="text/javascript" src="js/NeanderX.js" defer></script>
+    <script type="text/javascript" src="js/main.js" defer></script>
 </head>
 <body>
     <header class="header">NXJS</header>
@@ -31,28 +36,33 @@
         </main>
 
         <aside>
-            <div id="debug" class="papersheet">
+            <div id="debug" class="papersheet full-button-wrapper">
                 Debug:
                 <br>
                 <small class="debug-info">
-                    OpCode: <pre id="opcode">NOP</pre>
+                    OpCode: <pre class="opcode">NOP</pre>
                 </small>
                 <small class="debug-info">
-                    Rate: <pre id="rate">0</pre>
+                    Rate: <pre class="rate">0</pre>
                 </small>
                 <br>
                 <small class="debug-info">
-                    PC: <pre id="pc">0x00</pre>
+                    PC: <pre class="pc">0x00</pre>
                 </small>
                 <small class="debug-info">
-                    ACC: <pre id="acc">0x00</pre>
+                    ACC: <pre class="acc">0x00</pre>
                 </small>
                 <small class="debug-info">
-                    ZERO: <pre id="zero">0x00</pre>
+                    ZERO: <pre class="zero">0x00</pre>
                 </small>
                 <small class="debug-info">
-                    NEGATIVE: <pre id="negative">0x00</pre>
+                    NEGATIVE: <pre class="negative">0x00</pre>
                 </small>
+
+                <button class="load-file full-button">
+                    <i class="icon"></i>
+                    <input type="file" class="display-none">
+                </button>
             </div>
 
             <div id="display" class="papersheet">
@@ -60,7 +70,7 @@
                 <pre>00</pre>
             </div>
 
-            <div id="switches" class="papersheet text-align-center">
+            <div id="switches" class="papersheet text-align-center full-button-wrapper">
                 <div class="display-inline-block">
                     Switches
                     <form action="javascript:void(0)" class="switches"></form>
@@ -74,16 +84,13 @@
                     </small>
                 </div>
 
-                <form action="javascript:void(0)" class="readyCheck full-button">
-                    <input type="checkbox" id="ready_check">
-                    <label for="ready_check" class="icon"></label>
-                </form>
+                <button class="switches-ready full-button">
+                    <i class="icon"></i>
+                </button>
             </div>
         </aside>
     </div>
 
     <footer>Created by Vítor Augusto da Silva Vasconcellos</footer>
-
-    <script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>
