@@ -62,8 +62,8 @@
                         $acc      = $acc      | 0;
                         $zero     = $zero     | 0;
                         $negative = $negative | 0;
-
-                        $rate   = ($rate > 0? $rate|0 : 1) * 100 + 0.5 | 0;
+                        console.log($rate);
+                        $rate   = ($rate > 0? $rate : 1) * 100 + 0.5 | 0;
                         $opcode = String($opcode);
 
                         opcode.textContent = $opcode.toUpperCase().padEnd(3, ' ');
