@@ -1,0 +1,24 @@
+{
+  "name": "neanderx-assembler",
+  "version": "0.0.1",
+  "description": "NeanderX Machine Code Assembler",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeavenVolkoff/NXJS.git"
+  },
+  "keywords": [
+    "NeanderX",
+    "Assembler",
+    "Neander"
+  ],
+  "author": "Vitor Augusto da Silva Vasconcellos <vasvas10@gmail.com> (https://github.com/HeavenVolkoff)",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/HeavenVolkoff/NXJS/issues"
+  },
+  "homepage": "https://github.com/HeavenVolkoff/NXJS#readme"
+}
