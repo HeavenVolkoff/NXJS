@@ -56,7 +56,10 @@ class Assembler{
                     this.code.push(snippet);
                 }
 
-                this.map.push(i - snippet.length);
+                this.map.push({
+                    index: i - snippet.length,
+                    length: snippet.length
+                });
             }
         }
 
@@ -68,12 +71,12 @@ class Assembler{
     }
 
     genErrorStack(index){
-        const instructionIndex = this.map[index];
+        const instruction = this.map[index];
         const lineBreakRegExp  = util.regExps.lineBreak;
         
         let lineStartIndex = 0,
             lineEndIndex   = 0,
-            substring      = this.string.substring(0, instructionIndex),
+            substring      = this.string.substring(0, instruction.index),
             column         = 0,
             line           = 0;
 
@@ -85,19 +88,17 @@ class Assembler{
             line++;
         }
 
-        console.log(line, lineStartIndex, instructionIndex);
-
         //Get end lineIndex
         lineBreakRegExp.lastIndex = lineStartIndex;
         lineBreakRegExp.exec(this.string);
 
         lineEndIndex = lineBreakRegExp.lastIndex - 1;
-        column       = instructionIndex - lineStartIndex;
+        column       = instruction.index - lineStartIndex;
 
         return {
             line: line,
             column: column,
-            code: this.string.substring(lineStartIndex, lineEndIndex) + '\n' + ' '.repeat(instructionIndex - lineStartIndex) + '^\n'
+            code: this.string.substring(lineStartIndex, lineEndIndex) + '\n' + ' '.repeat(instruction.index - lineStartIndex - 1) + '^'.repeat(instruction.length) + '\n'
         };
     }
     
@@ -135,6 +136,6 @@ class Assembler{
 
 //##Test Case
 let ass = new Assembler(';---------------------------------------------------\n; Programa: 6 -  Encontrar o menor elemento em um vetor de 10 elementos de 8 bits cada. Coloque os valores iniciais do vetor com uso das diretivas do montador. (1,0 ponto)\n; Autor: Raphael Almeida, Guilherme Freire e Vitor Augusto\n; Data: 26/04/2016\n;---------------------------------------------------\n\nMIN        EQU  197\nLOOP       EQU  198\nADDR       EQU  199\nV1         EQU  200\n\nORG  0 ; Inicializa o contador, LOOP, com o valor 10, O endereço inicial do vetor, V1, e aponta ADDR para o inicio do vetor.\n\n           LDI  10\n           STA  LOOP\n\n           LDI  200\n           STA  ADDR\n\n           LDI  10\n           STA  V1\n\n           JMP  30\n\n\nORG  30 ; Faz um loop decrementando LOOP (contador). Calcula o endereço da proxima posição do vetor em ADDR e armazena o valor da contagem (regressiva) nesse endereço. Preenchendo, assim, o vetor.\n\n           LDI  255\n           ADD  LOOP\n\n           JZ   90\n\n           STA  LOOP\n\n           LDI  1\n           ADD  ADDR\n           STA  ADDR\n\n           LDA  LOOP\n           STA  @ADDR\n\n           JMP  30                      \n\n\nORG 90 ; Reseta o contador, LOOP, com o valor 10, Aponta ADDR para o inicio do vetor e coloca o primeiro valor do vetor em MIN.\n\n           LDI  10\n           STA  LOOP\n\n           LDI  200\n           STA  ADDR\n\n           LDA  @ADDR\n           STA  MIN\n\n           JMP  120\n\n\nORG 120 ; Faz um loop decrementando LOOP (contador). Calcula o endereço da proxima posição do vetor em ADDR e se o valor for menor pula para o trecho 110.\n\n           LDI  255\n           ADD  LOOP\n\n           JZ   150\n\n           STA  LOOP\n\n           LDI  1\n           ADD  ADDR\n           STA  ADDR\n\n           LDA  MIN\n           SUB  @ADDR\n           JN   120\n\n           JMP  110\n\n\nORG 110 ; Armazena o valor na posição apontada por ADDR em MIN.\n\n           LDA  @ADDR\n           STA  MIN\n\n           JMP 120\n           \n\nORG 150 ; Mostra no visor o resultado final.\n\n          LDA  MIN\n          OUT  0\n          \n          HLT');
-console.log(ass.genErrorStack(20));
+console.log(ass);
 
 module.exports = Assembler;

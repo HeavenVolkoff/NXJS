@@ -12,7 +12,15 @@ exports.AssemblerError = class AssemblerError extends Error{
 };
 
 exports.validNeanderNumber = (num) => {
-    return Number.isInteger(num) && num > -1 && num < 256 && !Object.is(num, -0);
+    if(Number.isInteger(num)){
+        if(num < 0 || num > 255){
+            //TODO: throw warning
+        }
+
+        return true;
+    }
+
+    return false;
 };
 
 exports.regExps = {
