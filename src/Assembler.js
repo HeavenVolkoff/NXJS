@@ -1,11 +1,12 @@
 const format = require('chalk');
 
+const messages = require('./messages.json');
 const opCodes  = require('./opCodes');
 const regExps  = require('./regExps');
-const messages = require('./messages.json');
+const shim     = require('./shim');
 
 const Warning = 0;
-const Error = 1;
+const Error   = 1;
 
 class Assembler{
     /**
@@ -103,22 +104,35 @@ class Assembler{
         lineEndIndex = lineBreakRegExp.lastIndex - 1;
         column       = instruction.index - lineStartIndex;
 
-        let toPrint = '';
+        let errorMessage = '';
+        let pointerLine  = ' '.repeat(instruction.index - lineStartIndex - 1) + '^'.repeat(instruction.length);
+        let minLength    = 0;
+        let errorLine    = this.asm.substring(lineStartIndex, lineEndIndex);
         switch(type){
             case Warning:
                 this.warnings++;
-                toPrint = format.bgBlack.bold.underline.yellow(`Warning:${line}:${column}: ${messages[code] || code}`);
+
+                errorMessage = `Warning:${line}:${column}: ${messages[code] || code}`;
+                minLength    = errorMessage.length;
+                errorMessage = format.bold.yellow(errorMessage);
                 break;
 
             case Error:
                 this.errors++;
-                toPrint = format.bgBlack.bold.underline.red(`Error:${line}:${column}: ${messages[code] || code}`);
+
+                errorMessage = `Error:${line}:${column}: ${messages[code] || code}`;
+                minLength    = errorMessage.length;
+                errorMessage = format.bold.red(errorMessage);
                 break;
         }
 
-        toPrint += format.bgBlack.white('\n' + this.asm.substring(lineStartIndex, lineEndIndex)) + format.bgBlack.green('\n' + ' '.repeat(instruction.index - lineStartIndex - 1) + '^'.repeat(instruction.length) + '\n');
+        minLength = minLength > errorLine.length? minLength : errorLine.length;
 
-        console.log(toPrint);
+        console.log(format.bgBlack(
+            shim.padEnd.call(errorMessage, minLength) + '\n' +
+            shim.padEnd.call(format.white(errorLine), minLength) + '\n' +
+            shim.padEnd.call(format.green(pointerLine), minLength)
+        ));
     }
     
     EQU(index) {
