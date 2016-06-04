@@ -1,50 +1,59 @@
-const opCodes   = require('./opCodes');
-const util      = require('./util');
+const format = require('chalk');
 
-const validNeanderNumber = util.validNeanderNumber;
-const AssemblerError     = util.AssemblerError;
+const opCodes  = require('./opCodes');
+const regExps  = require('./regExps');
+const messages = require('./messages.json');
+
+const Warning = 0;
+const Error = 1;
 
 class Assembler{
-    constructor(str){
-        if(typeof str !== 'string'){
-            throw new TypeError("Argument must be a string");
-        }
+    /**
+     * @param {(Object|String)} opts
+     *     @param {String}  [opts.asm]
+     *     @param {Boolean} [opts.throwOnWarning]
+     */
+    constructor(opts){
+        opts = opts || {};
 
-        this.instructions  = [];
-        this.memoryIndex   = 0;
-        this.memory        = new Uint8Array(255);
-        this.labels        = new Map();
-        this.string        = str;
-        this.code          = [];
-        this.map           = [];
+        this.throwOnWarning =  Boolean(opts.throwOnWarning);
+        this.instructions   = [];
+        this.memoryIndex    = 0;
+        this.warnings       = 0;
+        this.memory         = new Uint8Array(255);
+        this.labels         = new Map();
+        this.errors         = 0;
+        this.code           = [];
+        this.asm            = typeof opts === 'string'? opts : String(opts.asm);
+        this.map            = [];
 
-        const spaceRegexExp = util.regExps.space;
-        const opCodeRegex   = util.regExps.opCode;
+        const spaceRegexExp = regExps.space;
+        const opCodeRegex   = regExps.opCode;
 
         let i = 0;
 
-        while(i < str.length){
+        while(i < this.asm.length){
             let isComment = false;
             let snippet   = '';
             let j         = i;
 
             do{
                 if(isComment){
-                    isComment = str[j] !== '\n';
+                    isComment = this.asm[j] !== '\n';
 
-                }else if(spaceRegexExp.test(str[j])){
+                }else if(spaceRegexExp.test(this.asm[j])){
                     j++;
                     break;
 
-                }else if(str[j] === ';'){
+                }else if(this.asm[j] === ';'){
                     isComment = true;
 
                 }else {
-                    snippet += str[j];
+                    snippet += this.asm[j];
                 }
 
                 j++;
-            }while(j < str.length);
+            }while(j < this.asm.length);
 
             i = j;
 
@@ -70,36 +79,46 @@ class Assembler{
         //TODO: Loop through instructions array decoding and writing memory
     }
 
-    genErrorStack(index){
-        const instruction = this.map[index];
-        const lineBreakRegExp  = util.regExps.lineBreak;
+    throw(type, code, index){
+        const lineBreakRegExp  = regExps.lineBreak;
+        const instruction      = this.map[index];
         
         let lineStartIndex = 0,
+            codeTillError  = this.asm.substring(0, instruction.index),
             lineEndIndex   = 0,
-            substring      = this.string.substring(0, instruction.index),
             column         = 0,
             line           = 0;
 
         //Reset RegExp
         lineBreakRegExp.lastIndex = 0;
 
-        while(lineBreakRegExp.exec(substring) !== null) {
+        while(lineBreakRegExp.exec(codeTillError) !== null) {
             lineStartIndex = lineBreakRegExp.lastIndex;
             line++;
         }
 
-        //Get end lineIndex
         lineBreakRegExp.lastIndex = lineStartIndex;
-        lineBreakRegExp.exec(this.string);
+        lineBreakRegExp.exec(this.asm);
 
         lineEndIndex = lineBreakRegExp.lastIndex - 1;
         column       = instruction.index - lineStartIndex;
 
-        return {
-            line: line,
-            column: column,
-            code: this.string.substring(lineStartIndex, lineEndIndex) + '\n' + ' '.repeat(instruction.index - lineStartIndex - 1) + '^'.repeat(instruction.length) + '\n'
-        };
+        let toPrint = '';
+        switch(type){
+            case Warning:
+                this.warnings++;
+                toPrint = format.bgBlack.bold.underline.yellow(`Warning:${line}:${column}: ${messages[code] || code}`);
+                break;
+
+            case Error:
+                this.errors++;
+                toPrint = format.bgBlack.bold.underline.red(`Error:${line}:${column}: ${messages[code] || code}`);
+                break;
+        }
+
+        toPrint += format.bgBlack.white('\n' + this.asm.substring(lineStartIndex, lineEndIndex)) + format.bgBlack.green('\n' + ' '.repeat(instruction.index - lineStartIndex - 1) + '^'.repeat(instruction.length) + '\n');
+
+        console.log(toPrint);
     }
     
     EQU(index) {
@@ -110,16 +129,14 @@ class Assembler{
         let value = this.code[after];
         let temp;
 
-        if(!util.regExps.validLabelName.test(label)){
-            throw new AssemblerError('INVALID_LABEL_NAME', this.genErrorStack(before));
+        if(!regExps.validLabelName.test(label)){
+            return this.throw('INVALID_LABEL_NAME', before);
         }
 
         //TODO: throw Warning in case value is equal to label (redundancy)
         value = typeof (temp = this.labels.get(value)) === 'undefined'? +value : +temp;
 
-        if(!validNeanderNumber(value)){
-            throw new AssemblerError('INVALID_LABEL_VALUE', this.genErrorStack(after));
-        }
+        value = this.validateNumber(value, after);
 
         this.labels.set(label, value);
 
@@ -132,10 +149,26 @@ class Assembler{
             after = index;
         }
     }
+
+    validateNumber(num, errorIndex){
+        if(!Number.isInteger){
+
+        }
+
+        if(Number.isInteger(num)){
+            if(num < 0 || num > 255){
+                this.throw("NUMBER_EXCEED_RANGE");
+            }
+
+            return true;
+        }
+
+        return num & 255;
+    };
 }
 
 //##Test Case
 let ass = new Assembler(';---------------------------------------------------\n; Programa: 6 -  Encontrar o menor elemento em um vetor de 10 elementos de 8 bits cada. Coloque os valores iniciais do vetor com uso das diretivas do montador. (1,0 ponto)\n; Autor: Raphael Almeida, Guilherme Freire e Vitor Augusto\n; Data: 26/04/2016\n;---------------------------------------------------\n\nMIN        EQU  197\nLOOP       EQU  198\nADDR       EQU  199\nV1         EQU  200\n\nORG  0 ; Inicializa o contador, LOOP, com o valor 10, O endereço inicial do vetor, V1, e aponta ADDR para o inicio do vetor.\n\n           LDI  10\n           STA  LOOP\n\n           LDI  200\n           STA  ADDR\n\n           LDI  10\n           STA  V1\n\n           JMP  30\n\n\nORG  30 ; Faz um loop decrementando LOOP (contador). Calcula o endereço da proxima posição do vetor em ADDR e armazena o valor da contagem (regressiva) nesse endereço. Preenchendo, assim, o vetor.\n\n           LDI  255\n           ADD  LOOP\n\n           JZ   90\n\n           STA  LOOP\n\n           LDI  1\n           ADD  ADDR\n           STA  ADDR\n\n           LDA  LOOP\n           STA  @ADDR\n\n           JMP  30                      \n\n\nORG 90 ; Reseta o contador, LOOP, com o valor 10, Aponta ADDR para o inicio do vetor e coloca o primeiro valor do vetor em MIN.\n\n           LDI  10\n           STA  LOOP\n\n           LDI  200\n           STA  ADDR\n\n           LDA  @ADDR\n           STA  MIN\n\n           JMP  120\n\n\nORG 120 ; Faz um loop decrementando LOOP (contador). Calcula o endereço da proxima posição do vetor em ADDR e se o valor for menor pula para o trecho 110.\n\n           LDI  255\n           ADD  LOOP\n\n           JZ   150\n\n           STA  LOOP\n\n           LDI  1\n           ADD  ADDR\n           STA  ADDR\n\n           LDA  MIN\n           SUB  @ADDR\n           JN   120\n\n           JMP  110\n\n\nORG 110 ; Armazena o valor na posição apontada por ADDR em MIN.\n\n           LDA  @ADDR\n           STA  MIN\n\n           JMP 120\n           \n\nORG 150 ; Mostra no visor o resultado final.\n\n          LDA  MIN\n          OUT  0\n          \n          HLT');
-console.log(ass);
+ass.throw(Error, "TESTE", 32);
 
 module.exports = Assembler;
