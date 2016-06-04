@@ -113,25 +113,23 @@ class Assembler{
                 this.warnings++;
 
                 errorMessage = `Warning:${line}:${column}: ${messages[code] || code}`;
-                minLength    = errorMessage.length;
-                errorMessage = format.bold.yellow(errorMessage);
+                minLength = minLength > errorLine.length? minLength : errorLine.length;
+                errorMessage = format.bold.yellow(shim.padEnd.call(errorMessage, minLength));
                 break;
 
             case Error:
                 this.errors++;
 
                 errorMessage = `Error:${line}:${column}: ${messages[code] || code}`;
-                minLength    = errorMessage.length;
-                errorMessage = format.bold.red(errorMessage);
+                minLength = minLength > errorLine.length? minLength : errorLine.length;
+                errorMessage = format.bold.red(shim.padEnd.call(errorMessage, minLength));
                 break;
         }
 
-        minLength = minLength > errorLine.length? minLength : errorLine.length;
-
         console.log(format.bgBlack(
-            shim.padEnd.call(errorMessage, minLength) + '\n' +
-            shim.padEnd.call(format.white(errorLine), minLength) + '\n' +
-            shim.padEnd.call(format.green(pointerLine), minLength)
+            errorMessage + '\n' +
+            format.white(shim.padEnd.call(errorLine, minLength)) + '\n' +
+            format.green(shim.padEnd.call(pointerLine, minLength))
         ));
     }
     
