@@ -113,7 +113,7 @@ class Assembler{
                 this.warnings++;
 
                 errorMessage = `Warning:${line}:${column}: ${messages[code] || code}`;
-                minLength = minLength > errorLine.length? minLength : errorLine.length;
+                minLength = errorMessage.length > errorLine.length? errorMessage.length : errorLine.length;
                 errorMessage = format.bold.yellow(shim.padEnd.call(errorMessage, minLength));
                 break;
 
@@ -121,7 +121,7 @@ class Assembler{
                 this.errors++;
 
                 errorMessage = `Error:${line}:${column}: ${messages[code] || code}`;
-                minLength = minLength > errorLine.length? minLength : errorLine.length;
+                minLength = errorMessage.length > errorLine.length? errorMessage.length : errorLine.length;
                 errorMessage = format.bold.red(shim.padEnd.call(errorMessage, minLength));
                 break;
         }
