@@ -17,7 +17,7 @@ class Assembler{
     constructor(opts){
         opts = opts || {};
 
-        this.throwOnWarning =  Boolean(opts.throwOnWarning);
+        this.throwOnWarning = Boolean(opts.throwOnWarning);
         this.instructions   = [];
         this.memoryIndex    = 0;
         this.warnings       = 0;
@@ -81,8 +81,8 @@ class Assembler{
     }
 
     throw(type, code, index){
-        const lineBreakRegExp  = regExps.lineBreak;
-        const instruction      = this.map[index];
+        const lineBreakRegExp = regExps.lineBreak;
+        const instruction     = this.map[index];
         
         let lineStartIndex = 0,
             codeTillError  = this.asm.substring(0, instruction.index),
@@ -104,16 +104,17 @@ class Assembler{
         lineEndIndex = lineBreakRegExp.lastIndex - 1;
         column       = instruction.index - lineStartIndex;
 
-        let errorMessage = '';
-        let pointerLine  = ' '.repeat(instruction.index - lineStartIndex - 1) + '^'.repeat(instruction.length);
-        let minLength    = 0;
-        let errorLine    = this.asm.substring(lineStartIndex, lineEndIndex);
+        let errorMessage = '',
+            pointerLine  = ' '.repeat(instruction.index - lineStartIndex - 1) + '^'.repeat(instruction.length),
+            minLength    = 0,
+            errorLine    = this.asm.substring(lineStartIndex, lineEndIndex);
+
         switch(type){
             case Warning:
                 this.warnings++;
 
                 errorMessage = `Warning:${line}:${column}: ${messages[code] || code}`;
-                minLength = errorMessage.length > errorLine.length? errorMessage.length : errorLine.length;
+                minLength    = errorMessage.length > errorLine.length? errorMessage.length : errorLine.length;
                 errorMessage = format.bold.yellow(shim.padEnd.call(errorMessage, minLength));
                 break;
 
@@ -121,7 +122,7 @@ class Assembler{
                 this.errors++;
 
                 errorMessage = `Error:${line}:${column}: ${messages[code] || code}`;
-                minLength = errorMessage.length > errorLine.length? errorMessage.length : errorLine.length;
+                minLength    = errorMessage.length > errorLine.length? errorMessage.length : errorLine.length;
                 errorMessage = format.bold.red(shim.padEnd.call(errorMessage, minLength));
                 break;
         }
@@ -134,45 +135,53 @@ class Assembler{
     }
     
     EQU(index) {
-        let before = index - 1;
-        let after  = index + 1;
-
-        let label = this.code[before];
-        let value = this.code[after];
-        let temp;
+        let labelIndex = index - 1,
+            valueIndex = index + 1,
+            label      = this.code[labelIndex],
+            value      = this.code[valueIndex],
+            temp       = 0;
 
         if(!regExps.validLabelName.test(label)){
-            return this.throw('INVALID_LABEL_NAME', before);
+            this.throw(Error, 'INVALID_LABEL_NAME', labelIndex);
+            //We continue, because this doesn't make a difference to the HashMap and to show all errors present in the code
         }
 
-        //TODO: throw Warning in case value is equal to label (redundancy)
-        value = typeof (temp = this.labels.get(value)) === 'undefined'? +value : +temp;
+        temp = Number(value);
 
-        value = this.validateNumber(value, after);
+        if(Number.isNaN(temp)){
+            if(label === value){
+                this.throw(Warning, 'REDUNDANT_LABEL', labelIndex);
+            }
 
-        this.labels.set(label, value);
+            if(typeof (value = this.labels.get(value)) === 'undefined'){
+                this.throw(Error, "UNDECLARED_LABEL", valueIndex);
+                value = 0; //Continue with 0 so we can show all the code errors
+            }
 
-        while((index = this.code.indexOf(label, after)) !== -1){
+        }else{
+            value = temp;
+        }
+
+        this.labels.set(label, value = this.validateNumber(value));
+
+        while((index = this.code.indexOf(label, valueIndex + 1)) !== -1){
             if(this.code[index + 1] === 'EQU'){
-                break;
+                break; //Break in the case of another EQU using the same label
             }
 
             this.code[index] = value;
-            after = index;
+            valueIndex = index;
         }
     }
 
     validateNumber(num, errorIndex){
-        if(!Number.isInteger){
-
-        }
-
         if(Number.isInteger(num)){
             if(num < 0 || num > 255){
-                this.throw("NUMBER_EXCEED_RANGE");
+                this.throw(Warning, "NUMBER_EXCEED_RANGE", errorIndex);
             }
 
-            return true;
+        }else{
+            this.throw(Warning, "NUMBER_NOT_INTEGER", errorIndex);
         }
 
         return num & 255;
